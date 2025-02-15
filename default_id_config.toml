@@ -1,0 +1,16 @@
+# This is the config that is used if no `id_config.toml` is provided
+# to Iron Doom. You can use this file a start for your own impl.
+
+[data]
+# Path to the Doom original data file folder that contains the WAD files.
+# The default is look for the files in the current working directory.
+id_data = "./"
+
+[options]
+# Forces the disablement of all mods and all other options.
+# You will get the most possible experience to the 90s original
+# if this is enabled.
+vanilla = true
+
+[mods]
+# nothing yet
