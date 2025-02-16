@@ -39,7 +39,7 @@ pub fn add_file(lumps: &mut Vec<LumpInfo>, handle: usize, path: &Path) -> Result
 
     let mut header_reader = DataReader::new(&header_data);
     let header = WadInfo {
-        identification: header_reader.read_utf8_string(4),
+        identification: clean_string(&header_reader.read_utf8_string(4)),
         num_lumps: header_reader.read_i32(),
         info_table_ofs: header_reader.read_i32(),
     };
@@ -52,9 +52,8 @@ pub fn add_file(lumps: &mut Vec<LumpInfo>, handle: usize, path: &Path) -> Result
     for _ in 0..header.num_lumps {
         let file_pos = info_reader.read_i32();
         let size = info_reader.read_i32();
-        let name = info_reader.read_utf8_string(8);
-
-        println!("name = {}", name);
+        let name_raw = info_reader.read_utf8_string(8);
+        let name = clean_string(&name_raw);
 
         lumps.push(LumpInfo {
             name,
@@ -65,4 +64,19 @@ pub fn add_file(lumps: &mut Vec<LumpInfo>, handle: usize, path: &Path) -> Result
     }
 
     Ok(())
+}
+
+fn clean_string(str: &str) -> String {
+    str.replace('\0', "")
+}
+
+pub fn check_num_for_name(lump_info: &[LumpInfo], name: &str) -> Option<usize> {
+    let name_cmp = name.to_uppercase();
+    // scan backwards so patch lump files take precedence
+    for i in (0..lump_info.len()).rev() {
+        if lump_info[i].name.to_uppercase() == name_cmp {
+            return Some(i);
+        }
+    }
+    None
 }
