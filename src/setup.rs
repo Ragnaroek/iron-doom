@@ -1,8 +1,4 @@
-use crate::{
-    doom_data::ML_NODES,
-    game::{GameAction, GameState},
-    wad::check_num_for_name,
-};
+use crate::{doom_data::ML_NODES, game::GameState, wad::check_num_for_name};
 
 pub fn setup_level(game_state: &mut GameState) {
     let lump_name = format!("E{}M{}", game_state.episode, game_state.map);

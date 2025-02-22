@@ -6,13 +6,6 @@ use std::{
 
 use crate::util::DataReader;
 
-#[derive(Debug)]
-struct WadInfo {
-    identification: String,
-    num_lumps: i32,
-    info_table_ofs: i32,
-}
-
 pub struct LumpInfo {
     name: String,
     handle: usize,
@@ -38,18 +31,16 @@ pub fn add_file(lumps: &mut Vec<LumpInfo>, handle: usize, path: &Path) -> Result
         .map_err(|e| e.to_string())?;
 
     let mut header_reader = DataReader::new(&header_data);
-    let header = WadInfo {
-        identification: clean_string(&header_reader.read_utf8_string(4)),
-        num_lumps: header_reader.read_i32(),
-        info_table_ofs: header_reader.read_i32(),
-    };
+    let _identification = clean_string(&header_reader.read_utf8_string(4));
+    let num_lumps = header_reader.read_i32();
+    let info_table_ofs = header_reader.read_i32();
 
-    let mut file_info_data = vec![0; (16 * header.num_lumps) as usize];
-    file.read_exact_at(&mut file_info_data, header.info_table_ofs as u64)
+    let mut file_info_data = vec![0; (16 * num_lumps) as usize];
+    file.read_exact_at(&mut file_info_data, info_table_ofs as u64)
         .map_err(|e| e.to_string())?;
 
     let mut info_reader = DataReader::new(&file_info_data);
-    for _ in 0..header.num_lumps {
+    for _ in 0..num_lumps {
         let file_pos = info_reader.read_i32();
         let size = info_reader.read_i32();
         let name_raw = info_reader.read_utf8_string(8);
