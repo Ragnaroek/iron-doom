@@ -1,27 +1,29 @@
-use crate::{setup::setup_level, wad::LumpInfo};
+use std::fs::File;
+
+use crate::{def::Level, setup::setup_level, wad::LumpInfo};
 
 pub struct GameState {
+    pub wad_files: Vec<File>,
     pub lump_info: Vec<LumpInfo>,
     pub action: GameAction,
 
     pub episode: usize,
     pub map: usize,
-    pub level_state: Option<LevelState>,
+    pub current_level: Option<Level>,
 }
 
 impl GameState {
-    pub fn new(lump_info: Vec<LumpInfo>) -> GameState {
+    pub fn new(wad_files: Vec<File>, lump_info: Vec<LumpInfo>) -> GameState {
         GameState {
+            wad_files,
             lump_info,
             action: GameAction::Nothing,
             episode: 1,
             map: 1,
-            level_state: None,
+            current_level: None,
         }
     }
 }
-
-pub struct LevelState {}
 
 pub enum GameAction {
     Nothing,
@@ -35,8 +37,10 @@ pub fn game_ticker(game_state: &mut GameState) {
     }
 }
 
+// loads the selected level data and updates the 'current_level'
+// in the game_state.
 fn do_load_level(game_state: &mut GameState) {
-    setup_level(game_state);
-
+    let level = setup_level(game_state).expect("level setup");
+    game_state.current_level = Some(level);
     game_state.action = GameAction::Nothing;
 }

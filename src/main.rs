@@ -16,11 +16,13 @@ fn main() -> Result<(), String> {
     let mut wad_file = id_config.data.id_data.clone();
     wad_file.push("doom1.wad");
 
-    let files = vec![wad_file];
+    let file_paths = vec![wad_file];
 
-    let lump_info = init_multiple_files(&files)?;
+    let (files, lump_info) = init_multiple_files(&file_paths)?;
 
-    let game_state = GameState::new(lump_info);
+    println!("lump info = {}, files = {}", lump_info.len(), files.len());
+
+    let game_state = GameState::new(files, lump_info);
 
     doom_loop(game_state); // never returns
     Ok(())

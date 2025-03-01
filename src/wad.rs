@@ -6,24 +6,31 @@ use std::{
 
 use crate::util::DataReader;
 
+#[derive(Debug)]
 pub struct LumpInfo {
-    name: String,
-    handle: usize,
-    position: usize,
-    size: usize,
+    pub name: String,
+    pub handle: usize, // index into the files array for the WAD files
+    pub position: usize,
+    pub size: usize,
 }
 
-pub fn init_multiple_files(files: &[PathBuf]) -> Result<Vec<LumpInfo>, String> {
+pub fn init_multiple_files(file_paths: &[PathBuf]) -> Result<(Vec<File>, Vec<LumpInfo>), String> {
     let mut lumps = Vec::new();
+    let mut files = Vec::new();
 
-    for i in 0..files.len() {
-        add_file(&mut lumps, i, &files[i])?;
+    for i in 0..file_paths.len() {
+        add_file(&mut files, &mut lumps, i, &file_paths[i])?;
     }
 
-    Ok(lumps)
+    Ok((files, lumps))
 }
 
-pub fn add_file(lumps: &mut Vec<LumpInfo>, handle: usize, path: &Path) -> Result<(), String> {
+pub fn add_file(
+    files: &mut Vec<File>,
+    lumps: &mut Vec<LumpInfo>,
+    handle: usize,
+    path: &Path,
+) -> Result<(), String> {
     let file = File::open(path).map_err(|e| e.to_string())?;
 
     let mut header_data = vec![0; 12];
@@ -53,6 +60,8 @@ pub fn add_file(lumps: &mut Vec<LumpInfo>, handle: usize, path: &Path) -> Result
             size: size as usize,
         })
     }
+
+    files.push(file);
 
     Ok(())
 }
