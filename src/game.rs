@@ -1,6 +1,6 @@
 use std::fs::File;
 
-use crate::{def::Level, setup::setup_level, wad::LumpInfo};
+use crate::{def::Level, p_setup::setup_level, wad::LumpInfo};
 
 pub struct GameState {
     pub wad_files: Vec<File>,

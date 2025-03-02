@@ -4,6 +4,7 @@ use id::{
     config::read_id_config,
     game::{GameAction, GameState},
     net::try_run_tics,
+    r_main::render_player_view,
     wad::init_multiple_files,
 };
 
@@ -34,8 +35,15 @@ fn doom_loop(mut game_state: GameState) {
     // END TEST
 
     loop {
+        println!("next frame");
         try_run_tics(&mut game_state);
+
+        display(&game_state);
 
         sleep(Duration::from_millis(28)); // dummy tic rate
     }
+}
+
+fn display(game_state: &GameState) {
+    render_player_view(game_state);
 }

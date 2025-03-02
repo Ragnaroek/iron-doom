@@ -38,7 +38,7 @@ pub fn add_file(
         .map_err(|e| e.to_string())?;
 
     let mut header_reader = DataReader::new(&header_data);
-    let _identification = clean_string(&header_reader.read_utf8_string(4));
+    let _identification = read_name(&mut header_reader, 4);
     let num_lumps = header_reader.read_i32();
     let info_table_ofs = header_reader.read_i32();
 
@@ -50,8 +50,7 @@ pub fn add_file(
     for _ in 0..num_lumps {
         let file_pos = info_reader.read_i32();
         let size = info_reader.read_i32();
-        let name_raw = info_reader.read_utf8_string(8);
-        let name = clean_string(&name_raw);
+        let name = read_name(&mut info_reader, 8);
 
         lumps.push(LumpInfo {
             name,
@@ -64,6 +63,11 @@ pub fn add_file(
     files.push(file);
 
     Ok(())
+}
+
+pub fn read_name(reader: &mut DataReader, len: usize) -> String {
+    let name_raw = reader.read_utf8_string(len);
+    clean_string(&name_raw)
 }
 
 fn clean_string(str: &str) -> String {
