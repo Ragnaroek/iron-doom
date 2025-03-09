@@ -1,3 +1,7 @@
+#[cfg(test)]
+#[path = "./p_setup_test.rs"]
+mod p_setup_test;
+
 use std::os::unix::fs::FileExt;
 
 use crate::{
@@ -64,12 +68,15 @@ fn load_nodes(game_state: &mut GameState, lump_ix: usize) -> Result<Vec<Node>, S
         let dy = fixed::new_fixed_u16(reader.read_u16(), 0);
 
         let mut bbox = [[new_fixed_u32(0); 4]; 2];
-        let mut children = [0; 2];
         for j in 0..2 {
-            children[j] = reader.read_u16();
             for k in 0..4 {
                 bbox[j][k] = fixed::new_fixed_u16(reader.read_u16(), 0)
             }
+        }
+
+        let mut children = [0; 2];
+        for j in 0..2 {
+            children[j] = reader.read_u16();
         }
         result.push(Node {
             x,
