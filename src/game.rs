@@ -1,6 +1,6 @@
 use std::fs::File;
 
-use crate::{def::Level, p_setup::setup_level, wad::LumpInfo};
+use crate::{def::Level, p_setup::setup_level, r_state::RenderState, wad::LumpInfo};
 
 pub struct GameState {
     pub wad_files: Vec<File>,
@@ -10,6 +10,7 @@ pub struct GameState {
     pub episode: usize,
     pub map: usize,
     pub current_level: Option<Level>,
+    pub render_state: RenderState,
 }
 
 impl GameState {
@@ -21,6 +22,7 @@ impl GameState {
             episode: 1,
             map: 1,
             current_level: None,
+            render_state: RenderState::new(),
         }
     }
 }

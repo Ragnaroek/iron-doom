@@ -4,7 +4,11 @@ mod fixed_test;
 
 use std::fmt;
 
-#[derive(Eq, PartialEq, Clone, Copy)]
+pub const FRAC_BITS: i32 = 16;
+
+pub const ZERO: Fixed = new_fixed_u32(0);
+
+#[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Copy)]
 pub struct Fixed(i32); //16:16 fixed point
 
 pub fn new_fixed_u16(int_part: u16, frac_part: u16) -> Fixed {
@@ -19,17 +23,21 @@ pub fn new_fixed(int_part: i32, frac_part: i32) -> Fixed {
     Fixed(int_part << 16 | frac_part)
 }
 
-pub fn new_fixed_i32(raw: i32) -> Fixed {
+pub const fn new_fixed_i32(raw: i32) -> Fixed {
     Fixed(raw)
 }
 
-pub fn new_fixed_u32(raw: u32) -> Fixed {
+pub const fn new_fixed_u32(raw: u32) -> Fixed {
     Fixed(raw as i32)
 }
 
 impl Fixed {
     pub fn to_i32(&self) -> i32 {
         self.0
+    }
+
+    pub fn is_zero(&self) -> bool {
+        self.0 == 0
     }
 }
 
@@ -52,6 +60,47 @@ impl std::ops::Neg for Fixed {
 
     fn neg(self) -> Self::Output {
         new_fixed_i32(-self.0)
+    }
+}
+
+impl std::ops::Sub for Fixed {
+    type Output = Self;
+
+    fn sub(self, rhs: Fixed) -> Self::Output {
+        let (v, _) = self.0.overflowing_sub(rhs.0);
+        new_fixed_i32(v)
+    }
+}
+
+impl std::ops::Add for Fixed {
+    type Output = Self;
+
+    fn add(self, rhs: Fixed) -> Self::Output {
+        let (v, _) = self.0.overflowing_add(rhs.0);
+        new_fixed_i32(v)
+    }
+}
+
+impl std::ops::BitXor for Fixed {
+    type Output = Self;
+    fn bitxor(self, rhs: Fixed) -> Self::Output {
+        new_fixed_i32(self.0 ^ rhs.0)
+    }
+}
+
+impl std::ops::Shl<i32> for Fixed {
+    type Output = Self;
+
+    fn shl(self, shift: i32) -> Self::Output {
+        new_fixed_i32(self.0 << shift)
+    }
+}
+
+impl std::ops::Shr<i32> for Fixed {
+    type Output = Self;
+
+    fn shr(self, shift: i32) -> Self::Output {
+        new_fixed_i32(self.0 >> shift)
     }
 }
 
