@@ -11,6 +11,7 @@ pub mod p_setup;
 pub mod r_bsp;
 pub mod r_main;
 pub mod r_state;
+pub mod tables;
 pub mod test_helper;
 pub mod util;
 pub mod wad;

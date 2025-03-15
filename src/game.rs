@@ -11,6 +11,8 @@ pub struct GameState {
     pub map: usize,
     pub current_level: Option<Level>,
     pub render_state: RenderState,
+
+    pub set_size_needed: bool,
 }
 
 impl GameState {
@@ -23,6 +25,7 @@ impl GameState {
             map: 1,
             current_level: None,
             render_state: RenderState::new(),
+            set_size_needed: false,
         }
     }
 }
