@@ -1,4 +1,4 @@
-use crate::fixed::{Fixed, ZERO, new_fixed_u32};
+use crate::fixed::{Fixed, ZERO};
 
 const MAX_SEGS: usize = 32;
 

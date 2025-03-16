@@ -8,5 +8,6 @@ name = "id"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+sdl3 = { version = "0.14.16", features = ["unsafe_textures"] }
 serde = { version = "1.0.217", features = ["derive"] }
 toml = "0.8.20"

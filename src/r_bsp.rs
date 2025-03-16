@@ -240,5 +240,6 @@ fn subsector(render_state: &RenderState, level: &Level, num: usize) {
 }
 
 fn add_line(seg: &Seg) {
-    todo!("impl add_line");
+    println!("impl add_line");
+    // TODO impl
 }
