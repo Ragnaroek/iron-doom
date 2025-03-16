@@ -3,7 +3,7 @@
 mod r_bsp_test;
 
 use crate::{
-    def::{Level, Node},
+    def::{Level, Node, Seg},
     doom_data::NF_SUBSECTOR,
     fixed::{FRAC_BITS, Fixed, ZERO, fixed_mul},
     r_state::RenderState,
@@ -32,8 +32,7 @@ const CHECK_COORD: [[usize; 4]; 11] = [
 pub fn render_bsp_node(render_state: &RenderState, level: &Level, bsp_num: usize) {
     println!("render node {}", bsp_num);
     if (bsp_num & NF_SUBSECTOR) != 0 {
-        println!("NF={:x}", !NF_SUBSECTOR);
-        subsector(level, bsp_num & !NF_SUBSECTOR);
+        subsector(render_state, level, bsp_num & !NF_SUBSECTOR);
         return;
     }
 
@@ -220,9 +219,26 @@ fn point_to_angle(render_state: &RenderState, x_param: Fixed, y_param: Fixed) ->
     }
 }
 
-fn subsector(level: &Level, num: usize) {
-    println!("subsector: {}", num);
-
+// subsector
+// Determine floor/ceiling planes.
+// Add sprites of things in sector.
+// Draw one or more line segments.
+fn subsector(render_state: &RenderState, level: &Level, num: usize) {
     let sub = &level.subsectors[num];
     println!("sub = {}", sub.first_line);
+
+    let front_sector = &level.sectors[sub.sector];
+    let count = sub.num_lines;
+
+    // TODO determine floor and ceilingplane
+    // TODO AddSprites
+
+    for i in 0..count {
+        let line = &level.segs[(sub.first_line + i) as usize];
+        add_line(line)
+    }
+}
+
+fn add_line(seg: &Seg) {
+    todo!("impl add_line");
 }

@@ -26,8 +26,24 @@ pub struct Subsector {
     pub first_line: u16,
 }
 
+pub struct Seg {
+    pub v1: Vertex,
+    pub v2: Vertex,
+    pub angle: usize,
+    pub offset: Fixed,
+    pub side: usize,
+    pub line_def: usize,
+}
+
+#[derive(Clone)]
+pub struct Vertex {
+    pub x: Fixed,
+    pub y: Fixed,
+}
+
 pub struct Level {
     pub sectors: Vec<Sector>,
     pub subsectors: Vec<Subsector>,
     pub nodes: Vec<Node>,
+    pub segs: Vec<Seg>,
 }

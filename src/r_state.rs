@@ -1,10 +1,11 @@
-use crate::fixed::{Fixed, new_fixed_u32};
+use crate::fixed::{Fixed, ZERO, new_fixed_u32};
 
 const MAX_SEGS: usize = 32;
 
 pub struct RenderState {
     pub view_x: Fixed,
     pub view_y: Fixed,
+    pub view_z: Fixed,
 
     pub view_angle: usize,
 
@@ -17,8 +18,9 @@ pub struct RenderState {
 impl RenderState {
     pub fn new() -> RenderState {
         RenderState {
-            view_x: new_fixed_u32(0),
-            view_y: new_fixed_u32(0),
+            view_x: ZERO,
+            view_y: ZERO,
+            view_z: ZERO,
             view_angle: 0,
             clip_angle: 0,
             tables: RenderTables::empty(),
