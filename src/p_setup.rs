@@ -175,7 +175,7 @@ fn load_vertexes(game_state: &mut GameState, lump_ix: usize) -> Result<Vec<Verte
     Ok(result)
 }
 
-fn load_lump(game_state: &mut GameState, lump: usize) -> Result<Vec<u8>, String> {
+pub fn load_lump(game_state: &mut GameState, lump: usize) -> Result<Vec<u8>, String> {
     let lump = &game_state.lump_info[lump];
 
     let wad_file = &mut game_state.wad_files[lump.handle];

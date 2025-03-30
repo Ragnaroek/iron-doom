@@ -12,5 +12,10 @@ id_data = "./"
 # if this is enabled.
 vanilla = true
 
+# screen width, must be a multiple of 320
+width = 320
+# screen height, must be a multiple of 200
+height = 200
+
 [mods]
 # nothing yet

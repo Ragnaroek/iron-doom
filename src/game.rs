@@ -2,6 +2,14 @@ use std::fs::File;
 
 use crate::{def::Level, p_setup::setup_level, r_state::RenderState, wad::LumpInfo};
 
+#[derive(Eq, PartialEq)]
+pub enum State {
+    Level,
+    Intermission,
+    Finale,
+    DemoScreen,
+}
+
 pub struct GameState {
     pub wad_files: Vec<File>,
     pub lump_info: Vec<LumpInfo>,
@@ -13,6 +21,10 @@ pub struct GameState {
     pub render_state: RenderState,
 
     pub set_size_needed: bool,
+
+    pub advance_demo: bool,
+    pub state: State,
+    pub page_name: String,
 }
 
 impl GameState {
@@ -26,6 +38,9 @@ impl GameState {
             current_level: None,
             render_state: RenderState::new(),
             set_size_needed: false,
+            advance_demo: true,
+            page_name: "".to_string(),
+            state: State::DemoScreen,
         }
     }
 }

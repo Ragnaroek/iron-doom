@@ -9,7 +9,7 @@ pub const ID_CONFIG_FILE_NAME: &str = "id_config.toml";
 
 #[derive(Deserialize, Debug)]
 pub struct IDConfig {
-    #[serde(default = "true_default")]
+    #[serde(default = "default_true")]
     pub vanilla: bool,
 
     #[serde(default)]
@@ -26,14 +26,20 @@ pub struct IDConfigData {
 
 #[derive(Deserialize, Debug, Default)]
 pub struct IDConfigOptions {
-    #[serde(default)]
-    pub no_wait: bool,
-    #[serde(default)]
-    pub fast_psyched: bool,
-    #[serde(default)]
-    pub enable_debug: bool,
-    #[serde(default = "true_default")]
+    #[serde(default = "default_width")]
+    pub width: usize,
+    #[serde(default = "default_height")]
+    pub height: usize,
+    #[serde(default = "default_true")]
     pub fullscreen: bool,
+}
+
+fn default_width() -> usize {
+    320
+}
+
+fn default_height() -> usize {
+    200
 }
 
 fn default_path() -> PathBuf {
@@ -42,7 +48,7 @@ fn default_path() -> PathBuf {
     path
 }
 
-fn true_default() -> bool {
+fn default_true() -> bool {
     true
 }
 
