@@ -1,4 +1,4 @@
-use std::{f64::consts::PI, process::exit, time::Instant};
+use std::process::exit;
 
 use sdl3::{
     EventPump,

@@ -1,4 +1,4 @@
-use crate::{fixed::new_fixed_i32, test_helper::setup_e1m1};
+use crate::{fixed::Fixed, test_helper::setup_e1m1};
 
 use super::point_on_side;
 
@@ -6,8 +6,8 @@ use super::point_on_side;
 fn test_point_on_side() -> Result<(), String> {
     let (_, level) = setup_e1m1()?;
     // view point start E1M1
-    let x = new_fixed_i32(69206016);
-    let y = new_fixed_i32(-236978176);
+    let x = Fixed::new_from_i32(69206016);
+    let y = Fixed::new_from_i32(-236978176);
 
     assert_eq!(point_on_side(x, y, &level.nodes[235]), false);
     assert_eq!(point_on_side(x, y, &level.nodes[128]), true);

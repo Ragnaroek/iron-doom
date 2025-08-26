@@ -6,32 +6,32 @@ use std::fmt;
 
 pub const FRAC_BITS: i32 = 16;
 
-pub const ZERO: Fixed = new_fixed_u32(0);
+pub const ZERO: Fixed = Fixed(0);
 
 #[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Copy)]
 pub struct Fixed(i32); //16:16 fixed point
 
-pub fn new_fixed_u16(int_part: u16, frac_part: u16) -> Fixed {
-    new_fixed_u32((int_part as u32) << 16 | frac_part as u32)
-}
-
-pub fn new_fixed_i16(int_part: i16, frac_part: i16) -> Fixed {
-    new_fixed(int_part as i32, frac_part as i32)
-}
-
-pub fn new_fixed(int_part: i32, frac_part: i32) -> Fixed {
-    Fixed(int_part << 16 | frac_part)
-}
-
-pub const fn new_fixed_i32(raw: i32) -> Fixed {
-    Fixed(raw)
-}
-
-pub const fn new_fixed_u32(raw: u32) -> Fixed {
-    Fixed(raw as i32)
-}
-
 impl Fixed {
+    pub fn new(int_part: i32, frac_part: i32) -> Fixed {
+        Fixed(int_part << 16 | frac_part)
+    }
+
+    pub fn new_from_u16(int_part: u16, frac_part: u16) -> Fixed {
+        Fixed::new_from_u32((int_part as u32) << 16 | frac_part as u32)
+    }
+
+    pub fn new_from_i16(int_part: i16, frac_part: i16) -> Fixed {
+        Fixed::new(int_part as i32, frac_part as i32)
+    }
+
+    pub fn new_from_i32(raw: i32) -> Fixed {
+        Fixed(raw)
+    }
+
+    pub fn new_from_u32(raw: u32) -> Fixed {
+        Fixed(raw as i32)
+    }
+
     pub fn to_i32(&self) -> i32 {
         self.0
     }
@@ -59,7 +59,7 @@ impl std::ops::Neg for Fixed {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
-        new_fixed_i32(-self.0)
+        Fixed::new_from_i32(-self.0)
     }
 }
 
@@ -68,7 +68,7 @@ impl std::ops::Sub for Fixed {
 
     fn sub(self, rhs: Fixed) -> Self::Output {
         let (v, _) = self.0.overflowing_sub(rhs.0);
-        new_fixed_i32(v)
+        Fixed::new_from_i32(v)
     }
 }
 
@@ -77,14 +77,14 @@ impl std::ops::Add for Fixed {
 
     fn add(self, rhs: Fixed) -> Self::Output {
         let (v, _) = self.0.overflowing_add(rhs.0);
-        new_fixed_i32(v)
+        Fixed::new_from_i32(v)
     }
 }
 
 impl std::ops::BitXor for Fixed {
     type Output = Self;
     fn bitxor(self, rhs: Fixed) -> Self::Output {
-        new_fixed_i32(self.0 ^ rhs.0)
+        Fixed::new_from_i32(self.0 ^ rhs.0)
     }
 }
 
@@ -92,7 +92,7 @@ impl std::ops::Shl<i32> for Fixed {
     type Output = Self;
 
     fn shl(self, shift: i32) -> Self::Output {
-        new_fixed_i32(self.0 << shift)
+        Fixed::new_from_i32(self.0 << shift)
     }
 }
 
@@ -100,12 +100,12 @@ impl std::ops::Shr<i32> for Fixed {
     type Output = Self;
 
     fn shr(self, shift: i32) -> Self::Output {
-        new_fixed_i32(self.0 >> shift)
+        Fixed::new_from_i32(self.0 >> shift)
     }
 }
 
 pub fn fixed_mul(a: Fixed, b: Fixed) -> Fixed {
-    new_fixed_i32(((a.to_i32() as i64 * b.to_i32() as i64) + 0x8000 >> 16) as i32)
+    Fixed::new_from_i32(((a.to_i32() as i64 * b.to_i32() as i64) + 0x8000 >> 16) as i32)
 }
 
 pub fn fixed_by_frac(a_f: Fixed, b_f: Fixed) -> Fixed {
@@ -142,7 +142,7 @@ pub fn fixed_by_frac(a_f: Fixed, b_f: Fixed) -> Fixed {
         dx = dx - cf;
     }
 
-    new_fixed_u16(dx as u16, ax as u16)
+    Fixed::new_from_u16(dx as u16, ax as u16)
 }
 
 fn mul(a: i16, b: i16) -> (i16, i16) {

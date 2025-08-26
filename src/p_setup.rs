@@ -10,7 +10,7 @@ use crate::{
         MAP_NODE_SIZE, MAP_SECTOR_SIZE, MAP_SEG_SIZE, MAP_SUBSECTOR_SIZE, MAP_VERTEX_SIZE,
         ML_NODES, ML_SECTORS, ML_SEGS, ML_SSECTORS, ML_VERTEXES,
     },
-    fixed::{self, FRAC_BITS, new_fixed_u32},
+    fixed::{FRAC_BITS, Fixed},
     game::GameState,
     util::DataReader,
     wad::{check_num_for_name, read_name},
@@ -66,15 +66,15 @@ fn load_nodes(game_state: &mut GameState, lump_ix: usize) -> Result<Vec<Node>, S
     let mut result = Vec::with_capacity(num_nodes);
     let mut reader = DataReader::new(&node_data);
     for _ in 0..num_nodes {
-        let x = fixed::new_fixed_u16(reader.read_u16(), 0);
-        let y = fixed::new_fixed_u16(reader.read_u16(), 0);
-        let dx = fixed::new_fixed_u16(reader.read_u16(), 0);
-        let dy = fixed::new_fixed_u16(reader.read_u16(), 0);
+        let x = Fixed::new_from_u16(reader.read_u16(), 0);
+        let y = Fixed::new_from_u16(reader.read_u16(), 0);
+        let dx = Fixed::new_from_u16(reader.read_u16(), 0);
+        let dy = Fixed::new_from_u16(reader.read_u16(), 0);
 
-        let mut bbox = [[new_fixed_u32(0); 4]; 2];
+        let mut bbox = [[Fixed::new_from_u32(0); 4]; 2];
         for j in 0..2 {
             for k in 0..4 {
-                bbox[j][k] = fixed::new_fixed_u16(reader.read_u16(), 0)
+                bbox[j][k] = Fixed::new_from_u16(reader.read_u16(), 0)
             }
         }
 
@@ -102,8 +102,8 @@ fn load_sectors(game_state: &mut GameState, lump_ix: usize) -> Result<Vec<Sector
     let mut result = Vec::with_capacity(num_sectors);
     let mut reader = DataReader::new(&sector_data);
     for _ in 0..num_sectors {
-        let floor_height = fixed::new_fixed_u16(reader.read_u16(), 0);
-        let ceiling_height = fixed::new_fixed_u16(reader.read_u16(), 0);
+        let floor_height = Fixed::new_from_u16(reader.read_u16(), 0);
+        let ceiling_height = Fixed::new_from_u16(reader.read_u16(), 0);
 
         let floor_lump_name = read_name(&mut reader, 8);
         let ceiling_lump_name = read_name(&mut reader, 8);
@@ -146,7 +146,7 @@ fn load_segs(
         let angle = (reader.read_u16() as usize) << 16;
         let line_def = reader.read_u16() as usize;
         let side = reader.read_u16() as usize;
-        let offset = new_fixed_u32((reader.read_u16() as u32) << 16);
+        let offset = Fixed::new_from_u32((reader.read_u16() as u32) << 16);
         result.push(Seg {
             v1: vertexes[v1_ix].clone(),
             v2: vertexes[v2_ix].clone(),
@@ -168,8 +168,8 @@ fn load_vertexes(game_state: &mut GameState, lump_ix: usize) -> Result<Vec<Verte
     let mut result = Vec::with_capacity(num_vertex);
     let mut reader = DataReader::new(&vertex_data);
     for _ in 0..num_vertex {
-        let x = new_fixed_u32((reader.read_u16() as u32) << FRAC_BITS);
-        let y = new_fixed_u32((reader.read_u16() as u32) << FRAC_BITS);
+        let x = Fixed::new_from_u32((reader.read_u16() as u32) << FRAC_BITS);
+        let y = Fixed::new_from_u32((reader.read_u16() as u32) << FRAC_BITS);
         result.push(Vertex { x, y })
     }
     Ok(result)
