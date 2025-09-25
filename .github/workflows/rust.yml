@@ -10,19 +10,57 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build_and_test:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        toolchain:
-          - nightly
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust
-        run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+
+      - name: Install stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+
       - name: Update
-        run: sudo apt-get update
-      - name: Install SDL
-        run: sudo apt-get install libsdl3-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+                      build-essential just cmake git ninja-build pkg-config \
+                      libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev \
+                      libwayland-dev libxkbcommon-dev wayland-protocols
+
+      - name: Cache SDL3 build
+        id: cache-sdl
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/SDL3/build
+            ${{ github.workspace }}/SDL3/install
+            key: ${{ runner.os }}-sdl3-${{ hashFiles('**/CMakeLists.txt') }}
+
+      - name: Clone SDL3 (if not cached)
+        if: steps.cache-sdl.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth=1 https://github.com/libsdl-org/SDL.git SDL3
+
+      - name: Build & install SDL3 (if not cached)
+        if: steps.cache-sdl.outputs.cache-hit != 'true'
+        run: |
+          cd SDL3
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/SDL3/install -DSDL_TESTS=OFF
+          cmake --build build --config Release --parallel
+          cmake --install build
+
+      - name: Set SDL3 env vars
+        run: |
+          echo "SDL3_DIR=$GITHUB_WORKSPACE/SDL3/install" >> $GITHUB_ENV
+          echo "LIBRARY_PATH=$GITHUB_WORKSPACE/SDL3/install/lib:$LIBRARY_PATH" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$GITHUB_WORKSPACE/SDL3/install/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=$GITHUB_WORKSPACE/SDL3/install/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+          echo "C_INCLUDE_PATH=$GITHUB_WORKSPACE/SDL3/install/include:$C_INCLUDE_PATH" >> $GITHUB_ENV
+
       - name: Build
-        run: cargo build
+        run: just build
